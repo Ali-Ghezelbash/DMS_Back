@@ -51,6 +51,11 @@ async function getUserById(id) {
 }
 
 async function createUser(user) {
+  const fined = await User.findOne({
+    where: { username: user.username },
+  });
+  if (fined !== null) return "Duplicate username";
+
   user.password = await hash(user.password);
   const res = await User.create(user);
 
@@ -63,18 +68,21 @@ async function createUser(user) {
 
   return res;
 }
+
 async function updateUser(user) {
   if (user.password) user.password = await hash(user.password);
 
-  await UserRoles.destroy({
-    where: { userId: user.id },
-  });
+  if (user.roles) {
+    await UserRoles.destroy({
+      where: { userId: user.id },
+    });
 
-  let userRolesData = [];
-  user.roles.forEach((roleId) => {
-    userRolesData.push({ userId: user.id, roleId });
-  });
-  await UserRoles.bulkCreate(userRolesData);
+    let userRolesData = [];
+    user.roles.forEach((roleId) => {
+      userRolesData.push({ userId: user.id, roleId });
+    });
+    await UserRoles.bulkCreate(userRolesData);
+  }
 
   return await User.update(user, {
     where: { id: user.id },

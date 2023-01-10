@@ -2,13 +2,26 @@ var Document = require("../models/document.model");
 var Role = require("../models/role.model");
 var Log = require("../models/log.model");
 var DocumentRoles = require("../models/document_roles.model");
+const UserRoles = require("../models/user_roles.model");
+const { Op } = require("sequelize");
 
 async function getAllDocument(user) {
   const result = await Document.findAll({
+    where: {
+      [Op.or]: user.roles.map((role) => ({
+        "$`document_roles->role`.`id`$": role,
+      })),
+    },
     include: [
       {
         model: DocumentRoles,
-        include: [{ model: Role, attributes: ["id", "name", "key"] }],
+
+        include: [
+          {
+            model: Role,
+            attributes: ["id", "name", "key"],
+          },
+        ],
         attributes: ["id"],
       },
     ],
@@ -23,24 +36,8 @@ async function getAllDocument(user) {
       "document_key",
     ],
   });
-  const documents = result.map((value) => {
-    const document = value.dataValues;
-    const roles = document.document_roles.map(
-      (document_roles) => document_roles.role.id
-    );
-    delete document.document_roles;
 
-    return {
-      ...document,
-      roles,
-    };
-  });
-
-  const filterDocuments = documents.filter((document) => {
-    for (let i = 0; i < user.roles.length; i++) document.roles == user.roles[i];
-  });
-  console.log(filterDocuments);
-  return documents;
+  return result;
 
   // const userRole = await UserRoles.findAll({
   //   where: {
@@ -120,6 +117,17 @@ async function createDocument(document, user) {
 
 async function updateDocument(document, user) {
   const previousDoc = await Document.findOne({ where: { id: document.id } });
+
+  if (document.roles) {
+    await DocumentRoles.destroy({
+      where: { documentId: document.id },
+    });
+    let documentRolesData = [];
+    document.roles.forEach((roleId) => {
+      documentRolesData.push({ documentId: document.id, roleId });
+    });
+    await DocumentRoles.bulkCreate(documentRolesData);
+  }
   const res = await Document.update(document, {
     where: { id: document.id },
   });

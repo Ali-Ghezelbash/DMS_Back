@@ -28,7 +28,7 @@ const Document = sequelize.define("document", {
   },
   document_key: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: true,
   },
 });
 
