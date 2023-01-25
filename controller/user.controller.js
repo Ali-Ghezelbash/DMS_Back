@@ -18,7 +18,7 @@ async function getAllUser() {
   const users = result.map((value) => {
     const user = value.dataValues;
 
-    const roles = user.user_roles.map((user_role) => user_role.role.key);
+    const roles = user.user_roles.map((user_role) => user_role.role.id);
 
     delete user.user_roles;
 
