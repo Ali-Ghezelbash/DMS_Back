@@ -34,6 +34,7 @@ async function getAllDocument(user) {
       "active",
       "category_id",
       "document_key",
+      "createdAt",
     ],
   });
 

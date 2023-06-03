@@ -4,6 +4,10 @@ async function getAllCategory() {
   return await Category.findAll();
 }
 
+async function getCategoryById(id) {
+  return await Category.findByPk(id);
+}
+
 async function createCategory(category) {
   return await Category.create(category);
 }
@@ -22,6 +26,7 @@ async function deleteCategory(id) {
 
 module.exports = {
   getAllCategory,
+  getCategoryById,
   createCategory,
   updateCategory,
   deleteCategory,
