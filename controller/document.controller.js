@@ -160,10 +160,19 @@ async function deleteDocument(id, user) {
   return res;
 }
 
+async function filterByCategory(categoryId) {
+  const previousDoc = await Document.findAll(
+    { where: { category_id: categoryId } }
+  );
+
+  return previousDoc
+}
+
 module.exports = {
   getAllDocument,
   getDocumentById,
   createDocument,
   updateDocument,
   deleteDocument,
+  filterByCategory,
 };

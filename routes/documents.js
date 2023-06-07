@@ -5,8 +5,14 @@ var DocumentController = require("../controller/document.controller");
 const auth = require("../middleware/auth");
 
 router.get("/", auth, async function (req, res) {
+  if(req.query.categoryId === "all"){
   const result = await DocumentController.getAllDocument(req.user);
   res.send(result);
+  }
+  else {
+    const result = await DocumentController.filterByCategory(req.query.categoryId);
+    res.send(result);
+  }
 });
 
 router.get("/:id", auth, async function (req, res) {
@@ -31,4 +37,10 @@ router.delete("/:id", auth, async function (req, res) {
   );
   res.send({ result: result ? true : false });
 });
+
+router.get("filter/:categoryId", auth, async function (req, res) {
+  const result = await DocumentController.filterByCategory(req.params.categoryId);
+  res.send(result);
+});
+
 module.exports = router;
