@@ -77,10 +77,16 @@ async function updateUser(user) {
       where: { userId: user.id },
     });
 
+    const roles = await Role.findAll();
+
     let userRolesData = [];
-    user.roles.forEach((roleId) => {
-      userRolesData.push({ userId: user.id, roleId });
+    user.roles.forEach((roleKey) => {
+      userRolesData.push({
+        userId: user.id,
+        roleId: roles.find((i) => i.key === roleKey).id,
+      });
     });
+
     await UserRoles.bulkCreate(userRolesData);
   }
 

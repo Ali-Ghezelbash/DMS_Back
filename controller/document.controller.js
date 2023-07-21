@@ -5,9 +5,10 @@ var DocumentRoles = require("../models/document_roles.model");
 const UserRoles = require("../models/user_roles.model");
 const { Op } = require("sequelize");
 
-async function getAllDocument(user) {
+async function getAllDocument(user, filter) {
   const result = await Document.findAll({
     where: {
+      ...filter,
       [Op.or]: user.roles.map((role) => ({
         "$`document_roles->role`.`id`$": role,
       })),
@@ -99,7 +100,7 @@ async function getDocumentById(id) {
 }
 
 async function createDocument(document, user) {
-  const res = await Document.create(document);
+  const res = await Document.create({ ...document, user_id: user.id });
   let documentRolesData = [];
   document.roles.forEach((roleId) => {
     documentRolesData.push({ documentId: res.id, roleId });
