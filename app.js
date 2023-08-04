@@ -1,4 +1,5 @@
 const express = require("express");
+var fileupload = require("express-fileupload");
 require("dotenv").config();
 var cors = require("cors");
 
@@ -14,7 +15,8 @@ var LogRouter = require("./routes/logs");
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(fileupload({ createParentPath: true }));
+app.use(express.urlencoded({ extended: false }));
 
 app.use("/api/", indexRouter);
 app.use("/api/users", usersRouter);
