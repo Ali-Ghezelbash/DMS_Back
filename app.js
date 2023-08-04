@@ -2,6 +2,7 @@ const express = require("express");
 var fileupload = require("express-fileupload");
 require("dotenv").config();
 var cors = require("cors");
+const fs = require("fs");
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
@@ -26,6 +27,14 @@ app.use("/api/categories", categoryRouter);
 app.use("/api/documents", documentRouter);
 app.use("/api/comments", CommentRouter);
 app.use("/api/logs", LogRouter);
+app.get("/uploads/*", async function (req, res) {
+  let filePath = "." + req.url;
+
+  fs.readFile(filePath, (error, data) => {
+    if (error) return;
+    res.end(data, "utf8");
+  });
+});
 
 const port = 3000;
 app.listen(port, () => {

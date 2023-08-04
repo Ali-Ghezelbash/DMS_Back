@@ -36,6 +36,7 @@ async function getAllDocument(user, filter) {
       "category_id",
       "document_key",
       "createdAt",
+      "file",
     ],
   });
 
@@ -162,11 +163,11 @@ async function deleteDocument(id, user) {
 }
 
 async function filterByCategory(categoryId) {
-  const previousDoc = await Document.findAll(
-    { where: { category_id: categoryId } }
-  );
+  const previousDoc = await Document.findAll({
+    where: { category_id: categoryId },
+  });
 
-  return previousDoc
+  return previousDoc;
 }
 
 module.exports = {

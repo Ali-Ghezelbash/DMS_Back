@@ -22,18 +22,18 @@ router.get("/:id", auth, async function (req, res) {
 });
 
 router.post("/", auth, async function (req, res) {
-  // const result = await DocumentController.createDocument(req.body, req.user);
-  console.log("dddddddddddddddd", req.fields);
-  // const file = req.files.myFile;
-  // const path = __dirname + "/files/" + file.name;
+  let file = req.files.file;
 
-  // file.mv(path, (err) => {
-  //   if (err) {
-  //     return res.status(500).send(err);
-  //   }
-  //   return res.send({ status: "success", path: path });
-  // });
-  res.send(true);
+  let fileName = new Date().getTime() + "-" + file.name;
+
+  file.mv("./uploads/" + fileName);
+
+  req.body.file = fileName;
+
+  req.body.roles = JSON.parse(req.body.roles);
+
+  const result = await DocumentController.createDocument(req.body, req.user);
+  res.send(result);
 });
 
 router.put("/", auth, async function (req, res) {
