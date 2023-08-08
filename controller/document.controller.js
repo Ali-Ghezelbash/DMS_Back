@@ -162,12 +162,23 @@ async function deleteDocument(id, user) {
   return res;
 }
 
-async function filterByCategory(categoryId) {
-  const previousDoc = await Document.findAll({
-    where: { category_id: categoryId },
-  });
-
-  return previousDoc;
+async function filter(categoryId, userId) {
+  if (!userId) {
+    const previousDoc = await Document.findAll({
+      where: { category_id: categoryId },
+    });
+    return previousDoc;
+  } else if (!categoryId) {
+    const previousDoc = await Document.findAll({
+      where: { user_id: userId },
+    });
+    return previousDoc;
+  } else {
+    const previousDoc = await Document.findAll({
+      where: { user_id: userId, category_id: categoryId },
+    });
+    return previousDoc;
+  }
 }
 
 module.exports = {
@@ -176,5 +187,5 @@ module.exports = {
   createDocument,
   updateDocument,
   deleteDocument,
-  filterByCategory,
+  filter,
 };

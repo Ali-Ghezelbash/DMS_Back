@@ -5,12 +5,12 @@ var DocumentController = require("../controller/document.controller");
 const auth = require("../middleware/auth");
 
 router.get("/", auth, async function (req, res) {
-  if (!req.query.category_id) {
+  if (!req.query.category_id && !req.query.user_id) {
     const result = await DocumentController.getAllDocument(req.user);
     res.send(result);
   } else {
-    const result = await DocumentController.filterByCategory(
-      req.query.category_id
+    const result = await DocumentController.filter(
+      req.query.category_id, req.query.user_id
     );
     res.send(result);
   }
