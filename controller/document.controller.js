@@ -4,6 +4,7 @@ var Log = require("../models/log.model");
 var DocumentRoles = require("../models/document_roles.model");
 const UserRoles = require("../models/user_roles.model");
 const { Op } = require("sequelize");
+const User = require("../models/user.model");
 
 async function getAllDocument(user, filter) {
   const result = await Document.findAll({
@@ -16,7 +17,6 @@ async function getAllDocument(user, filter) {
     include: [
       {
         model: DocumentRoles,
-
         include: [
           {
             model: Role,
@@ -25,12 +25,13 @@ async function getAllDocument(user, filter) {
         ],
         attributes: ["id"],
       },
+      { model: User, attributes: ["id", "username"] },
     ],
     attributes: [
       "id",
       "title",
       "description",
-      "user_id",
+      "userId",
       "version",
       "active",
       "category_id",
@@ -83,7 +84,7 @@ async function getDocumentById(id) {
       "id",
       "title",
       "description",
-      "user_id",
+      "userId",
       "version",
       "active",
       "category_id",
@@ -101,7 +102,7 @@ async function getDocumentById(id) {
 }
 
 async function createDocument(document, user) {
-  const res = await Document.create({ ...document, user_id: user.id });
+  const res = await Document.create({ ...document, userId: user.id });
   let documentRolesData = [];
   document.roles.forEach((roleId) => {
     documentRolesData.push({ documentId: res.id, roleId });
@@ -170,12 +171,12 @@ async function filter(categoryId, userId) {
     return previousDoc;
   } else if (!categoryId) {
     const previousDoc = await Document.findAll({
-      where: { user_id: userId },
+      where: { userId },
     });
     return previousDoc;
   } else {
     const previousDoc = await Document.findAll({
-      where: { user_id: userId, category_id: categoryId },
+      where: { userId, category_id: categoryId },
     });
     return previousDoc;
   }

@@ -58,12 +58,17 @@ async function createUser(user) {
 
   user.password = await hash(user.password);
   const res = await User.create(user);
+  user.id = res.dataValues.id;
+
+  const roles = await Role.findAll();
 
   let userRolesData = [];
-  user.roles.forEach((roleId) => {
-    userRolesData.push({ userId: res.id, roleId });
+  user.roles.forEach((roleKey) => {
+    userRolesData.push({
+      userId: user.id,
+      roleId: roles.find((i) => i.key === roleKey).id,
+    });
   });
-
   await UserRoles.bulkCreate(userRolesData);
 
   return res;

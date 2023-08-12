@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 var sequelize = require("../config/db");
+const User = require("./user.model");
 
 const Document = sequelize.define("document", {
   title: {
@@ -15,10 +16,6 @@ const Document = sequelize.define("document", {
     allowNull: false,
   },
   active: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  user_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
@@ -44,5 +41,7 @@ sequelize
   .catch((error) => {
     console.error("Unable to create table : ", error);
   });
+
+Document.belongsTo(User);
 
 module.exports = Document;

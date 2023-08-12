@@ -10,7 +10,8 @@ router.get("/", auth, async function (req, res) {
     res.send(result);
   } else {
     const result = await DocumentController.filter(
-      req.query.category_id, req.query.user_id
+      req.query.category_id,
+      req.query.user_id
     );
     res.send(result);
   }
@@ -37,6 +38,17 @@ router.post("/", auth, async function (req, res) {
 });
 
 router.put("/", auth, async function (req, res) {
+  let file = req.files.file;
+  if (file) {
+    let fileName = new Date().getTime() + "-" + file.name;
+    file.mv("./uploads/" + fileName);
+    req.body.file = fileName;
+  } else {
+    req.body.file = req.body.fileName;
+  }
+
+  req.body.roles = JSON.parse(req.body.roles);
+
   const result = await DocumentController.updateDocument(req.body, req.user);
   res.send(result);
 });
