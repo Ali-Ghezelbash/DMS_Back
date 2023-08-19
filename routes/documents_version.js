@@ -1,11 +1,11 @@
 var express = require("express");
 var router = express.Router();
 
-var DocumentController = require("../controller/document.controller");
+var Document_versionController = require("../controller/document_version.controller");
 const auth = require("../middleware/auth");
 
 router.get("/", auth, async function (req, res) {
-  const result = await DocumentController.getAllDocument(req.user, req.query);
+  const result = await Document_versionController.getAllDocument_version(req.user, req.query);
   res.send(result);
 
   // else {
@@ -18,7 +18,7 @@ router.get("/", auth, async function (req, res) {
 });
 
 router.get("/:id", auth, async function (req, res) {
-  const result = await DocumentController.getDocumentById(req.params.id);
+  const result = await Document_versionController.getDocument_versionById(req.params.id);
   res.send(result);
 });
 
@@ -33,7 +33,7 @@ router.post("/", auth, async function (req, res) {
 
   req.body.roles = JSON.parse(req.body.roles);
 
-  const result = await DocumentController.createDocument(req.body, req.user);
+  const result = await Document_versionController.createDocument_version(req.body, req.user);
   res.send(result);
 });
 
@@ -50,12 +50,12 @@ router.put("/", auth, async function (req, res) {
 
   req.body.roles = JSON.parse(req.body.roles);
 
-  const result = await DocumentController.updateDocument(req.body, req.user);
+  const result = await Document_versionController.updateDocument_version(req.body, req.user);
   res.send(result);
 });
 
 router.delete("/:id", auth, async function (req, res) {
-  const result = await DocumentController.deleteDocument(
+  const result = await Document_versionController.deleteDocument_version(
     req.params.id,
     req.user
   );

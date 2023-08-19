@@ -10,6 +10,7 @@ var authRouter = require("./routes/auth");
 var roleRouter = require("./routes/roles");
 var categoryRouter = require("./routes/categories");
 var documentRouter = require("./routes/documents");
+var documentRouter_version = require("./routes/documents_version");
 var CommentRouter = require("./routes/comments");
 var LogRouter = require("./routes/logs");
 
@@ -25,6 +26,7 @@ app.use("/api/roles", roleRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/categories", categoryRouter);
 app.use("/api/documents", documentRouter);
+app.use("/api/documents_version", documentRouter_version);
 app.use("/api/comments", CommentRouter);
 app.use("/api/logs", LogRouter);
 app.get("/uploads/*", async function (req, res) {
