@@ -33,6 +33,15 @@ router.put("/", auth, async function (req, res) {
   }
 });
 
+router.put("/changePassword", auth, async function (req, res) {
+  if (req.user.isAdmin) {
+    const result = await UserController.updateUser(req.body);
+    res.send(result);
+  } else {
+    res.status(403).send({ message: "permission denied" });
+  }
+});
+
 router.delete("/:id", auth, async function (req, res) {
   if (req.user.isAdmin) {
     const result = await UserController.deleteUser(req.params.id);

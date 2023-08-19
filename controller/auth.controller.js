@@ -19,13 +19,14 @@ async function login(user) {
     ],
   });
 
-  if (!fined) return { message: "invalid username or password" };
+  if (!fined) return { error: true, message: "invalid username or password" };
 
   const { dataValues } = fined;
 
   const validPassword = await compare(user.password, dataValues.password);
 
-  if (!validPassword) return { message: "invalid username or password" };
+  if (!validPassword)
+    return { error: true, message: "invalid username or password" };
 
   let roles = [];
   let isAdmin = false;

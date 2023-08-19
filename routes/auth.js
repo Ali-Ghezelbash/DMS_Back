@@ -5,7 +5,7 @@ var Auth = require("../controller/auth.controller");
 
 router.post("/login", async function (req, res) {
   const result = await Auth.login(req.body);
-  res.send(result);
+  res.status(result.error ? 401 : 200).send(result);
 });
 
 module.exports = router;
