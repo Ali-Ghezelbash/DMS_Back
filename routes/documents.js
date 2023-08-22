@@ -38,7 +38,7 @@ router.post("/", auth, async function (req, res) {
 });
 
 router.put("/", auth, async function (req, res) {
-  console.log("req.body", req.body)
+  console.log("req.body", req.body);
   let file = req.files?.file;
   if (file) {
     let fileName = new Date().getTime() + "-" + file.name;

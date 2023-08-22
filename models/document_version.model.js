@@ -19,10 +19,6 @@ const Document = sequelize.define("Document_version", {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  category_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
   document_key: {
     type: DataTypes.INTEGER,
     allowNull: true,

@@ -2,9 +2,9 @@ var Document = require("../models/document.model");
 var Role = require("../models/role.model");
 var Log = require("../models/log.model");
 var DocumentRoles = require("../models/document_roles.model");
-const UserRoles = require("../models/user_roles.model");
 const { Op } = require("sequelize");
 const User = require("../models/user.model");
+const Category = require("../models/category.model");
 
 async function getAllDocument(user, filter) {
   const result = await Document.findAll({
@@ -26,6 +26,7 @@ async function getAllDocument(user, filter) {
         attributes: ["id"],
       },
       { model: User, attributes: ["id", "username"] },
+      { model: Category, attributes: ["id", "name"] },
     ],
     attributes: [
       "id",
@@ -34,7 +35,7 @@ async function getAllDocument(user, filter) {
       "userId",
       "version",
       "active",
-      "category_id",
+      "categoryId",
       "document_key",
       "createdAt",
       "file",
@@ -87,18 +88,19 @@ async function getDocumentById(id) {
       "userId",
       "version",
       "active",
-      "category_id",
+      "categoryId",
       "document_key",
     ],
   });
-
-  const document = result.dataValues;
-  const roles = document.document_roles.map(
-    (document_role) => document_role.role.id
-  );
-  delete document.document_roles;
-  const documents = { ...document, roles };
-  return documents;
+  if (result) {
+    const document = result.dataValues;
+    const roles = document.document_roles.map(
+      (document_role) => document_role.role.id
+    );
+    delete document.document_roles;
+    const documents = { ...document, roles };
+    return documents;
+  } else return "not found";
 }
 
 async function createDocument(document, user) {
@@ -166,7 +168,7 @@ async function deleteDocument(id, user) {
 async function filter(categoryId, userId) {
   if (!userId) {
     const previousDoc = await Document.findAll({
-      where: { category_id: categoryId },
+      where: { categoryId },
     });
     return previousDoc;
   } else if (!categoryId) {
@@ -176,7 +178,7 @@ async function filter(categoryId, userId) {
     return previousDoc;
   } else {
     const previousDoc = await Document.findAll({
-      where: { userId, category_id: categoryId },
+      where: { userId, categoryId },
     });
     return previousDoc;
   }

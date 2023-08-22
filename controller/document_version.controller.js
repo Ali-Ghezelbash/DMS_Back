@@ -34,7 +34,7 @@ async function getAllDocument_version(user, filter) {
       "userId",
       "version",
       "active",
-      "category_id",
+      "categoryId",
       "document_key",
       "createdAt",
       "file",
@@ -87,7 +87,7 @@ async function getDocument_versionById(id) {
       "userId",
       "version",
       "active",
-      "category_id",
+      "categoryId",
       "document_key",
     ],
   });
@@ -166,7 +166,7 @@ async function deleteDocument_version(id, user) {
 async function filter(categoryId, userId) {
   if (!userId) {
     const previousDoc = await Document.findAll({
-      where: { category_id: categoryId },
+      where: { categoryId },
     });
     return previousDoc;
   } else if (!categoryId) {
@@ -176,7 +176,7 @@ async function filter(categoryId, userId) {
     return previousDoc;
   } else {
     const previousDoc = await Document.findAll({
-      where: { userId, category_id: categoryId },
+      where: { userId, categoryId },
     });
     return previousDoc;
   }

@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 var sequelize = require("../config/db");
+const Category = require("./category.model");
 const User = require("./user.model");
 
 const Document = sequelize.define("document", {
@@ -16,10 +17,6 @@ const Document = sequelize.define("document", {
     allowNull: false,
   },
   active: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  category_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
@@ -43,5 +40,6 @@ sequelize
   });
 
 Document.belongsTo(User);
+Document.belongsTo(Category);
 
 module.exports = Document;
