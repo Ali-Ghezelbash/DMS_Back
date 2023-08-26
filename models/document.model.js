@@ -12,15 +12,7 @@ const Document = sequelize.define("document", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  version: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  active: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  document_key: {
+  documentKey: {
     type: DataTypes.INTEGER,
     allowNull: true,
   },

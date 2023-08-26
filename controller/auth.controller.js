@@ -11,9 +11,7 @@ async function login(user) {
     include: [
       {
         model: UserRoles,
-        include: [
-          { model: Role, attributes: ["id", "name", "key", "isAdmin"] },
-        ],
+        include: [{ model: Role, attributes: ["id", "name", "isAdmin"] }],
         attributes: ["id"],
       },
     ],

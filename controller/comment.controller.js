@@ -1,7 +1,17 @@
 var Comment = require("../models/comment.model");
+const User = require("../models/user.model");
 
-async function getAllComment() {
-  return await Comment.findAll();
+async function getAllComment(filter) {
+  const result = await Comment.findAll({
+    where: {
+      ...filter,
+    },
+    include: [
+      { model: User, attributes: ["id", "username", "firstname", "lastname"] },
+    ],
+  });
+
+  return result;
 }
 
 async function createComment(comment) {

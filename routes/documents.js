@@ -7,14 +7,6 @@ const auth = require("../middleware/auth");
 router.get("/", auth, async function (req, res) {
   const result = await DocumentController.getAllDocument(req.user, req.query);
   res.send(result);
-
-  // else {
-  //   const result = await DocumentController.filter(
-  //     req.query.category_id,
-  //     req.query.user_id
-  //   );
-  //   res.send(result);
-  // }
 });
 
 router.get("/:id", auth, async function (req, res) {
@@ -38,7 +30,6 @@ router.post("/", auth, async function (req, res) {
 });
 
 router.put("/", auth, async function (req, res) {
-  console.log("req.body", req.body);
   let file = req.files?.file;
   if (file) {
     let fileName = new Date().getTime() + "-" + file.name;

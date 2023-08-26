@@ -6,6 +6,13 @@ const { Op } = require("sequelize");
 const User = require("../models/user.model");
 const Category = require("../models/category.model");
 
+/*
+filter = {
+  userId: number;
+  categoryId: number;
+}
+*/
+
 async function getAllDocument(user, filter) {
   const result = await Document.findAll({
     where: {
@@ -20,7 +27,7 @@ async function getAllDocument(user, filter) {
         include: [
           {
             model: Role,
-            attributes: ["id", "name", "key"],
+            attributes: ["id", "name"],
           },
         ],
         attributes: ["id"],
@@ -28,95 +35,52 @@ async function getAllDocument(user, filter) {
       { model: User, attributes: ["id", "username"] },
       { model: Category, attributes: ["id", "name"] },
     ],
-    attributes: [
-      "id",
-      "title",
-      "description",
-      "userId",
-      "version",
-      "active",
-      "categoryId",
-      "document_key",
-      "createdAt",
-      "file",
-    ],
+    group: ["documentKey"],
+    order: [["createdAt", "ASC"]],
   });
-
   return result;
-
-  // const userRole = await UserRoles.findAll({
-  //   where: {
-  //     user_id: user.id,
-  //   },
-  // });
-  // let userRolesData = [];
-  // userRole.forEach((userRoles) => {
-  //   userRolesData.push(userRoles.roleId);
-  // });
-  // console.log(userRolesData);
-
-  // const res = await DocumentRoles.findAll({
-  //   where: {
-  //     roleId: 2,
-  //   },
-  // });
-  // let documentRolesData = [];
-  // res.forEach((documentRoles) => {
-  //   documentRolesData.push(documentRoles.documentId);
-  // });
-  // console.log(documentRolesData);
-  // return await Document.findAll({
-  //   where: {
-  //     id: documentRolesData,
-  //   },
-  // });
 }
 
 async function getDocumentById(id) {
-  const result = await Document.findByPk(id, {
+  return await Document.findByPk(id, {
     include: [
       {
         model: DocumentRoles,
-        include: [{ model: Role, attributes: ["id", "name", "key"] }],
+        include: [
+          {
+            model: Role,
+            attributes: ["id", "name"],
+          },
+        ],
         attributes: ["id"],
       },
-    ],
-    attributes: [
-      "id",
-      "title",
-      "description",
-      "userId",
-      "version",
-      "active",
-      "categoryId",
-      "document_key",
+      { model: User, attributes: ["id", "username"] },
+      { model: Category, attributes: ["id", "name"] },
     ],
   });
-  if (result) {
-    const document = result.dataValues;
-    const roles = document.document_roles.map(
-      (document_role) => document_role.role.id
-    );
-    delete document.document_roles;
-    const documents = { ...document, roles };
-    return documents;
-  } else return "not found";
 }
 
 async function createDocument(document, user) {
   const res = await Document.create({ ...document, userId: user.id });
-  let documentRolesData = [];
-  document.roles.forEach((roleId) => {
-    documentRolesData.push({ documentId: res.id, roleId });
-  });
-  await DocumentRoles.bulkCreate(documentRolesData);
+
+  await Document.update(
+    { documentKey: document.documentKey ? document.documentKey : res.id },
+    {
+      where: { id: res.id },
+    }
+  );
+  const documentRole = document.roles.map((roleId) => ({
+    documentId: res.id,
+    roleId,
+  }));
+  await DocumentRoles.bulkCreate(documentRole);
 
   const newLog = {
     to_doc: JSON.stringify(document),
     users_id: user.id,
     doc_id: res.id,
   };
-  const log = await Log.create(newLog);
+  await Log.create(newLog);
 
   return res;
 }
@@ -124,16 +88,15 @@ async function createDocument(document, user) {
 async function updateDocument(document, user) {
   const previousDoc = await Document.findOne({ where: { id: document.id } });
 
-  if (document.roles) {
-    await DocumentRoles.destroy({
-      where: { documentId: document.id },
-    });
-    let documentRolesData = [];
-    document.roles.forEach((roleId) => {
-      documentRolesData.push({ documentId: document.id, roleId });
-    });
-    await DocumentRoles.bulkCreate(documentRolesData);
-  }
+  await DocumentRoles.destroy({
+    where: { documentId: document.id },
+  });
+  const documentRole = document.roles.map((roleId) => ({
+    documentId: document.id,
+    roleId,
+  }));
+  await DocumentRoles.bulkCreate(documentRole);
+
   const res = await Document.update(document, {
     where: { id: document.id },
   });
@@ -144,7 +107,7 @@ async function updateDocument(document, user) {
     users_id: user.id,
     doc_id: document.id,
   };
-  const log = await Log.create(newLog);
+  await Log.create(newLog);
 
   return res;
 }
@@ -160,28 +123,9 @@ async function deleteDocument(id, user) {
     users_id: user.id,
     doc_id: id,
   };
-  const log = await Log.create(newLog);
+  await Log.create(newLog);
 
   return res;
-}
-
-async function filter(categoryId, userId) {
-  if (!userId) {
-    const previousDoc = await Document.findAll({
-      where: { categoryId },
-    });
-    return previousDoc;
-  } else if (!categoryId) {
-    const previousDoc = await Document.findAll({
-      where: { userId },
-    });
-    return previousDoc;
-  } else {
-    const previousDoc = await Document.findAll({
-      where: { userId, categoryId },
-    });
-    return previousDoc;
-  }
 }
 
 module.exports = {
@@ -190,5 +134,4 @@ module.exports = {
   createDocument,
   updateDocument,
   deleteDocument,
-  filter,
 };

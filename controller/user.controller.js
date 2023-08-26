@@ -4,101 +4,71 @@ var UserRoles = require("../models/user_roles.model");
 var { hash } = require("../utils/hash");
 
 async function getAllUser() {
-  const result = await User.findAll({
+  return (result = await User.findAll({
     include: [
       {
         model: UserRoles,
-        include: [{ model: Role, attributes: ["id", "name", "key"] }],
+        include: [{ model: Role, attributes: ["id", "name"] }],
         attributes: ["id"],
       },
     ],
     attributes: ["id", "firstname", "lastname", "username", "createdAt"],
-  });
-
-  const users = result.map((value) => {
-    const user = value.dataValues;
-
-    const roles = user.user_roles.map((user_role) => user_role.role.key);
-
-    delete user.user_roles;
-
-    return {
-      ...user,
-      roles,
-    };
-  });
-
-  return users;
+  }));
 }
 
 async function getUserById(id) {
-  const result = await User.findByPk(id, {
+  return await User.findByPk(id, {
     include: [
       {
         model: UserRoles,
-        include: [{ model: Role, attributes: ["id", "name", "key"] }],
+        include: [{ model: Role, attributes: ["id", "name"] }],
         attributes: ["id"],
       },
     ],
     attributes: ["id", "firstname", "lastname", "username", "createdAt"],
   });
-
-  const user = result.dataValues;
-  const roles = user.user_roles.map((user_role) => user_role.role.key);
-  delete user.user_roles;
-  const users = { ...user, roles };
-  return users;
 }
 
 async function createUser(user) {
-  const fined = await User.findOne({
-    where: { username: user.username },
-  });
-  if (fined !== null) return "Duplicate username";
-
   user.password = await hash(user.password);
+
   const res = await User.create(user);
-  user.id = res.dataValues.id;
 
-  const roles = await Role.findAll();
+  const userRole = user.roles.map((roleId) => ({
+    userId: res.dataValues.id,
+    roleId,
+  }));
 
-  let userRolesData = [];
-  user.roles.forEach((roleKey) => {
-    userRolesData.push({
-      userId: user.id,
-      roleId: roles.find((i) => i.key === roleKey).id,
-    });
-  });
-  await UserRoles.bulkCreate(userRolesData);
+  await UserRoles.bulkCreate(userRole);
 
-  return res;
+  delete res.dataValues.password;
+  return res.dataValues;
 }
 
 async function updateUser(user) {
-  if (user.password) user.password = await hash(user.password);
+  await UserRoles.destroy({
+    where: { userId: user.id },
+  });
 
-  if (user.roles) {
-    await UserRoles.destroy({
-      where: { userId: user.id },
-    });
+  const userRole = user.roles.map((roleId) => ({
+    userId: user.id,
+    roleId,
+  }));
 
-    const roles = await Role.findAll();
-
-    let userRolesData = [];
-    user.roles.forEach((roleKey) => {
-      userRolesData.push({
-        userId: user.id,
-        roleId: roles.find((i) => i.key === roleKey).id,
-      });
-    });
-
-    await UserRoles.bulkCreate(userRolesData);
-  }
+  await UserRoles.bulkCreate(userRole);
 
   return await User.update(user, {
     where: { id: user.id },
   });
 }
+async function changePassword(user) {
+  user.password = await hash(user.password);
+
+  return await User.update(user, {
+    where: { id: user.id },
+  });
+}
+
 async function deleteUser(id) {
   return await User.destroy({
     where: { id },
@@ -110,5 +80,6 @@ module.exports = {
   getUserById,
   createUser,
   updateUser,
+  changePassword,
   deleteUser,
 };

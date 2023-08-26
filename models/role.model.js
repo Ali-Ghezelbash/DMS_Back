@@ -6,10 +6,6 @@ const Role = sequelize.define("role", {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  key: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
   isAdmin: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
