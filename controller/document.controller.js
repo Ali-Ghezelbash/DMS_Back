@@ -35,8 +35,8 @@ async function getAllDocument(user, filter) {
       { model: User, attributes: ["id", "username"] },
       { model: Category, attributes: ["id", "name"] },
     ],
-    group: ["documentKey"],
-    order: [["createdAt", "ASC"]],
+    // group: ["documentKey"],
+    // order: [["createdAt", "ASC"]],
   });
   return result;
 }

@@ -10,6 +10,11 @@ router.get("/", [auth, isAdmin], async function (req, res) {
   res.send(result);
 });
 
+router.get("/:id", auth, async function (req, res) {
+  const result = await RoleController.getRoleById(req.params.id);
+  res.send(result);
+});
+
 router.post("/", [auth, isAdmin], async function (req, res) {
   const result = await RoleController.createRole(req.body);
   res.send(result);

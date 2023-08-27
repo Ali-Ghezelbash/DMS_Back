@@ -4,6 +4,10 @@ async function getAllRole() {
   return await Role.findAll();
 }
 
+async function getRoleById(id) {
+  return await Role.findByPk(id);
+}
+
 async function createRole(role) {
   return await Role.create(role);
 }
@@ -22,6 +26,7 @@ async function deleteRole(id) {
 
 module.exports = {
   getAllRole,
+  getRoleById,
   createRole,
   updateRole,
   deleteRole,
