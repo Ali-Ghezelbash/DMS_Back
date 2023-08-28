@@ -5,6 +5,7 @@ var DocumentController = require("../controller/document.controller");
 const auth = require("../middleware/auth");
 
 router.get("/", auth, async function (req, res) {
+  console.log(req.query);
   const result = await DocumentController.getAllDocument(req.user, req.query);
   res.send(result);
 });

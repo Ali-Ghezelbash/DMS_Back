@@ -4,6 +4,7 @@ var router = express.Router();
 var Comment = require("../controller/comment.controller");
 
 router.get("/", async function (req, res) {
+  console.log(req.query);
   const result = await Comment.getAllComment();
   res.send(result);
 });

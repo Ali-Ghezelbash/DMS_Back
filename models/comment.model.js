@@ -1,18 +1,11 @@
 const { DataTypes } = require("sequelize");
 var sequelize = require("../config/db");
 const User = require("./user.model");
+const Document = require("./document.model")
 
 const Comment = sequelize.define("comment", {
   message: {
     type: DataTypes.STRING,
-    allowNull: false,
-  },
-  users_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-  },
-  documents_id: {
-    type: DataTypes.INTEGER,
     allowNull: false,
   },
 });
@@ -27,5 +20,6 @@ sequelize
   });
 
 Comment.belongsTo(User);
+Comment.belongsTo(Document);
 
 module.exports = Comment;

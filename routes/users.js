@@ -14,6 +14,11 @@ router.get("/info", auth, async function (req, res) {
   res.send(result);
 });
 
+router.get("/:id", [auth, isAdmin], async function (req, res) {
+  const result = await UserController.getUserById(req.params.id);
+  res.send(result);
+});
+
 router.post("/", [auth, isAdmin], async function (req, res) {
   const result = await UserController.createUser(req.body);
   res.send(result);
@@ -25,7 +30,7 @@ router.put("/", [auth, isAdmin], async function (req, res) {
 });
 
 router.put("/changePassword", [auth, isAdmin], async function (req, res) {
-  const result = await UserController.updateUser(req.body);
+  const result = await UserController.changePassword(req.body);
   res.send(result);
 });
 

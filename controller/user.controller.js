@@ -61,6 +61,7 @@ async function updateUser(user) {
     where: { id: user.id },
   });
 }
+
 async function changePassword(user) {
   user.password = await hash(user.password);
 
