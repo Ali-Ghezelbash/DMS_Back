@@ -20,6 +20,10 @@ const Document = sequelize.define("document", {
     type: DataTypes.STRING,
     allowNull: false,
   },
+  version: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
 });
 
 sequelize

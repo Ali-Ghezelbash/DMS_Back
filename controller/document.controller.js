@@ -2,7 +2,7 @@ var Document = require("../models/document.model");
 var Role = require("../models/role.model");
 var Log = require("../models/log.model");
 var DocumentRoles = require("../models/document_roles.model");
-const { Op } = require("sequelize");
+const { Op, Sequelize } = require("sequelize");
 const User = require("../models/user.model");
 const Category = require("../models/category.model");
 
@@ -17,6 +17,9 @@ async function getAllDocument(user, filter) {
   const result = await Document.findAll({
     where: {
       ...filter,
+      [Op.in]: Sequelize.literal(
+        "`document`.`version` = (SELECT max(version) FROM documents t2 WHERE t2.documentKey = `document`.`documentKey`)"
+      ),
       [Op.or]: user.roles.map((role) => ({
         "$`document_roles->role`.`id`$": role,
       })),
@@ -35,8 +38,8 @@ async function getAllDocument(user, filter) {
       { model: User, attributes: ["id", "username"] },
       { model: Category, attributes: ["id", "name"] },
     ],
-    // group: ["documentKey"],
-    // order: [["createdAt", "ASC"]],
+    group: ["documentKey"],
+    order: [["createdAt", "ASC"]],
   });
   return result;
 }
@@ -91,10 +94,12 @@ async function updateDocument(document, user) {
   await DocumentRoles.destroy({
     where: { documentId: document.id },
   });
+
   const documentRole = document.roles.map((roleId) => ({
     documentId: document.id,
     roleId,
   }));
+
   await DocumentRoles.bulkCreate(documentRole);
 
   const res = await Document.update(document, {
