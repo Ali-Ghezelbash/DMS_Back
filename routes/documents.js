@@ -15,6 +15,11 @@ router.get("/:id", auth, async function (req, res) {
   res.send(result);
 });
 
+router.get("/versions/:id", auth, async function (req, res) {
+  const result = await DocumentController.getAllVersionDocument(req.user, req.params.id);
+  res.send(result);
+});
+
 router.post("/", auth, async function (req, res) {
   let file = req.files.file;
 

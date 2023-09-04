@@ -6,13 +6,6 @@ const { Op, Sequelize } = require("sequelize");
 const User = require("../models/user.model");
 const Category = require("../models/category.model");
 
-/*
-filter = {
-  userId: number;
-  categoryId: number;
-}
-*/
-
 async function getAllDocument(user, filter) {
   const result = await Document.findAll({
     where: {
@@ -38,10 +31,36 @@ async function getAllDocument(user, filter) {
       { model: User, attributes: ["id", "username"] },
       { model: Category, attributes: ["id", "name"] },
     ],
-    group: ["documentKey"],
-    order: [["createdAt", "ASC"]],
   });
   return result;
+}
+
+async function getAllVersionDocument(user, documentKey) {
+  const result = await Document.findAll({
+    where: {
+      documentKey: documentKey,
+      [Op.or]: user.roles.map((role) => ({
+        "$`document_roles->role`.`id`$": role,
+      })),
+    },
+    include: [
+      {
+        model: DocumentRoles,
+        include: [
+          {
+            model: Role,
+            attributes: [],
+          },
+        ],
+        attributes: [],
+      },
+    ],
+    attributes: ["version", "id"]
+  });
+  let versions = new Array;
+  result.forEach((i, index) => (
+    versions[index] = i.dataValues));
+  return versions;
 }
 
 async function getDocumentById(id) {
@@ -135,6 +154,7 @@ async function deleteDocument(id, user) {
 
 module.exports = {
   getAllDocument,
+  getAllVersionDocument,
   getDocumentById,
   createDocument,
   updateDocument,

@@ -46,4 +46,14 @@ async function login(user) {
   return { token };
 }
 
+async function shareDocument(link, expireTime) {
+  const token = jwt.sign(
+    { link: link},
+    process.env.TOKEN_KEY,
+    {
+      expiresIn: expireTime,
+    }
+  );
+}
+
 module.exports = { login };
