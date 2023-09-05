@@ -55,11 +55,10 @@ async function getAllVersionDocument(user, documentKey) {
         attributes: [],
       },
     ],
-    attributes: ["version", "id"]
+    attributes: ["version", "id"],
   });
-  let versions = new Array;
-  result.forEach((i, index) => (
-    versions[index] = i.dataValues));
+  let versions = new Array();
+  result.forEach((i, index) => (versions[index] = i.dataValues));
   return versions;
 }
 
@@ -97,12 +96,12 @@ async function createDocument(document, user) {
   }));
   await DocumentRoles.bulkCreate(documentRole);
 
-  const newLog = {
-    to_doc: JSON.stringify(document),
-    users_id: user.id,
-    doc_id: res.id,
-  };
-  await Log.create(newLog);
+  // const newLog = {
+  //   to_doc: JSON.stringify(document),
+  //   users_id: user.id,
+  //   doc_id: res.id,
+  // };
+  // await Log.create(newLog);
 
   return res;
 }
@@ -125,13 +124,13 @@ async function updateDocument(document, user) {
     where: { id: document.id },
   });
 
-  const newLog = {
-    from_doc: JSON.stringify(previousDoc.dataValues),
-    to_doc: JSON.stringify(document),
-    users_id: user.id,
-    doc_id: document.id,
-  };
-  await Log.create(newLog);
+  // const newLog = {
+  //   from_doc: JSON.stringify(previousDoc.dataValues),
+  //   to_doc: JSON.stringify(document),
+  //   users_id: user.id,
+  //   doc_id: document.id,
+  // };
+  // await Log.create(newLog);
 
   return res;
 }
@@ -142,12 +141,12 @@ async function deleteDocument(id, user) {
     where: { id },
   });
 
-  const newLog = {
-    from_doc: JSON.stringify(previousDoc),
-    users_id: user.id,
-    doc_id: id,
-  };
-  await Log.create(newLog);
+  // const newLog = {
+  //   from_doc: JSON.stringify(previousDoc),
+  //   users_id: user.id,
+  //   doc_id: id,
+  // };
+  // await Log.create(newLog);
 
   return res;
 }
