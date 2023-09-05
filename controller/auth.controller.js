@@ -46,10 +46,11 @@ async function login(user) {
   return { token };
 }
 
-async function shareDocument(link, expireTime) {
-  const token = jwt.sign({ link: link }, process.env.TOKEN_KEY, {
+async function shareDocument(id, expireTime, filename) {
+  const token = jwt.sign({ id, filename }, process.env.TOKEN_KEY, {
     expiresIn: expireTime,
   });
+  return { token };
 }
 
-module.exports = { login };
+module.exports = { login, shareDocument };

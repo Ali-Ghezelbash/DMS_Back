@@ -5,18 +5,22 @@ var DocumentController = require("../controller/document.controller");
 const auth = require("../middleware/auth");
 
 router.get("/", auth, async function (req, res) {
-  console.log(req.query);
   const result = await DocumentController.getAllDocument(req.user, req.query);
   res.send(result);
 });
 
-router.get("/:id", auth, async function (req, res) {
+router.get("/:id", async function (req, res) {
   const result = await DocumentController.getDocumentById(req.params.id);
   res.send(result);
 });
 
 router.get("/versions/:id", auth, async function (req, res) {
   const result = await DocumentController.getAllVersionDocument(req.user, req.params.id);
+  res.send(result);
+});
+
+router.get("/shareDocument/:id", auth, async function (req, res) {
+  const result = await DocumentController.getDocumentBytoken(req.params.id, req.query);
   res.send(result);
 });
 

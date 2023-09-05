@@ -5,6 +5,7 @@ var DocumentRoles = require("../models/document_roles.model");
 const { Op, Sequelize } = require("sequelize");
 const User = require("../models/user.model");
 const Category = require("../models/category.model");
+var Auth = require("../controller/auth.controller");
 
 async function getAllDocument(user, filter) {
   const result = await Document.findAll({
@@ -81,6 +82,12 @@ async function getDocumentById(id) {
   });
 }
 
+async function getDocumentBytoken(id, body) {
+  console.log(body)
+  const result = await Auth.shareDocument(id, body.expireTime, body.filename);
+  return result
+}
+
 async function createDocument(document, user) {
   const res = await Document.create({ ...document, userId: user.id });
 
@@ -155,6 +162,7 @@ module.exports = {
   getAllDocument,
   getAllVersionDocument,
   getDocumentById,
+  getDocumentBytoken,
   createDocument,
   updateDocument,
   deleteDocument,
